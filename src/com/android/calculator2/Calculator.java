@@ -17,6 +17,7 @@
 package com.android.calculator2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -60,9 +62,18 @@ public class Calculator extends Activity implements PanelSwitcher.Listener, Logi
     public void onCreate(Bundle state) {
         super.onCreate(state);
 
+        // If IME was opened from another app before the user launches us try to close it.
+        try {
+            InputMethodManager im =
+                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (Exception e) {
+        }
+
         // Disable IME for this application
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
-                WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        getWindow().setFlags(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN,
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         setContentView(R.layout.main);
         mPager = (ViewPager) findViewById(R.id.panelswitch);
